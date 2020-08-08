@@ -1,5 +1,3 @@
-<title>CanTester: SocketCAN Test Application</title>
-
 ## 1. Prerequisites
 
 Having at least one can0 interface up and running and physically connected to the same or another Linux machine.
