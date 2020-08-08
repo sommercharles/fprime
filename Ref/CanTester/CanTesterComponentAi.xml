@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../../Autocoders/Python/schema/ISF/component_schema.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<component name="CanTester" kind="active" namespace="Ref">
+    
+    <import_port_type>Fw/Buffer/BufferSendPortAi.xml</import_port_type>
+
+    <comment>Component to test SocketCAN driver</comment>
+    
+    <ports>
+        <port name="CanRecv" data_type="Fw::BufferSend" kind="guarded_input" max_number="1"/>
+        <port name="CanWrite" data_type="Fw::BufferSend" kind="output" max_number="1"/>
+    </ports>
+    
+    <commands>
+        <command kind="async" opcode="0" mnemonic="SendCanFrame"/>
+    </commands>
+    
+    <telemetry>
+        <channel id="0" name="CanDataBytesSent" data_type="U32"/>
+        <channel id="1" name="CanDataBytesReceived" data_type="U32"/>
+    </telemetry>
+    
+    <events>
+        <event id="0" name="CanFrameReceived" severity="ACTIVITY_HI" format_string = "Received CAN frame ID %08x DLC %d"/>
+     </events>
+</component>
+

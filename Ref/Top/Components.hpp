@@ -26,6 +26,9 @@
 #include <Drv/SocketIpDriver/SocketIpDriverComponentImpl.hpp>
 #include <Svc/GroundInterface/GroundInterface.hpp>
 
+#include <Drv/SocketCanDriver/SocketCanDriverComponentImpl.hpp>
+#include <Ref/CanTester/CanTesterComponentImpl.hpp>
+
 void constructRefArchitecture(void);
 bool constructApp(bool dump, U32 port_number, char* hostname);
 void exitTasks(void);
@@ -56,5 +59,8 @@ extern Ref::SendBuffImpl sendBuffComp;
 extern Ref::SignalGen SG1 , SG2, SG3, SG4, SG5;
 extern Ref::PingReceiverComponentImpl pingRcvr;
 extern Drv::SocketIpDriverComponentImpl socketIpDriver;
+
+extern Drv::SocketCanDriverComponentImpl socketCan0Driver;
+extern Ref::CanTesterComponentImpl canTester;
 
 #endif

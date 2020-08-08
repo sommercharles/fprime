@@ -34,6 +34,9 @@
     <import_component_type>Svc/GroundInterface/GroundInterfaceComponentAi.xml</import_component_type>
     <import_component_type>Svc/LinuxTimer/LinuxTimerComponentAi.xml</import_component_type>
     <import_component_type>Drv/SocketIpDriver/SocketIpDriverComponentAi.xml</import_component_type>
+    <import_component_type>Drv/SocketCanDriver/SocketCanDriverComponentAi.xml</import_component_type>
+    <import_component_type>Ref/CanTester/CanTesterComponentAi.xml</import_component_type>
+
 
     <!-- Declare component instances - must match names in Components.hpp -->
 
@@ -75,6 +78,11 @@
     <instance namespace="Ref" name="SG5" type="SignalGen" base_id="281"  base_id_window="20" />
     <instance namespace="Ref" name="SG4" type="SignalGen" base_id="321"  base_id_window="20" />
     <instance namespace="Drv" name="blockDrv" type="BlockDriver" base_id="481"  base_id_window="20" />
+
+
+    <!-- CanTester Components -->
+    <instance namespace="Drv" name="socketCan0Driver" type="SocketCanDriver" base_id="701" base_id_window="20" />
+    <instance namespace="Ref" name="canTester" type="CanTester" base_id="1000"  base_id_window="20" />
 
     <!-- Connections -->
     <!-- Communications driver connections -->
@@ -152,6 +160,12 @@
          <target component = "cmdDisp" port = "compCmdReg" type = "CmdReg" num = "13"/>
     </connection>
 
+
+    <connection name = "CanTesterReg">
+         <source component = "canTester" port = "CmdReg" type = "CmdReg" num = "0"/>
+         <target component = "cmdDisp" port = "compCmdReg" type = "CmdReg" num = "14"/>
+    </connection>
+
     <!-- Command Dispatch Ports - Dispatch port number must match registration port for each component -->
 
     <connection name = "EventLoggerDisp">
@@ -214,6 +228,12 @@
          <source component = "cmdDisp" port = "compCmdSend" type = "Cmd" num = "13"/>
          <target component = "pingRcvr" port = "CmdDisp" type = "Cmd" num = "0"/>
     </connection>
+
+
+    <connection name = "CanTesterDisp">
+        <source component = "cmdDisp" port = "compCmdSend" type = "Cmd" num = "14"/>
+        <target component = "canTester" port = "CmdDisp" type = "Cmd" num = "0"/>
+    </connection>
     
    
     <!-- Command Reply Ports - Go to the same response port on the dispatcher -->
@@ -274,6 +294,11 @@
          <source component = "SG5" port = "cmdResponseOut" type = "CmdResponse" num = "0"/>
          <target component = "cmdDisp" port = "compCmdStat" type = "CmdResponse" num = "0"/>
     </connection>
+
+   <connection name = "CanTesterStat">
+       <source component = "canTester" port = "CmdStatus" type = "CmdResponse" num = "0"/>
+        <target component = "cmdDisp" port = "compCmdStat" type = "CmdResponse" num = "0"/>
+   </connection>
 
     <!-- Sequencer Connections - should not conflict with uplink port -->
 
@@ -377,6 +402,12 @@
          <source component = "pingRcvr" port = "Log" type = "Log" num = "0"/>
          <target component = "eventLogger" port = "LogRecv" type = "Log" num = "0"/>
     </connection>
+
+
+   <connection name = "CanTesterLog">
+       <source component = "canTester" port = "Log" type = "Log" num = "0"/>
+        <target component = "eventLogger" port = "LogRecv" type = "Log" num = "0"/>
+   </connection>
    
     <!-- Event Logger Text Connections -->
    
@@ -450,6 +481,12 @@
     </connection>
     <connection name = "recvBufText">
          <source component = "recvBuffComp" port = "LogText" type = "LogText" num = "0"/>
+         <target component = "textLogger" port = "TextLogger" type = "LogText" num = "0"/>
+    </connection>
+
+
+    <connection name = "CanTesterText">
+         <source component = "canTester" port = "LogText" type = "LogText" num = "0"/>
          <target component = "textLogger" port = "TextLogger" type = "LogText" num = "0"/>
     </connection>
     
@@ -530,6 +567,11 @@
     </connection>
     <connection name = "blockDrvTlm">
          <source component = "blockDrv" port = "Tlm" type = "Tlm" num = "0"/>
+         <target component = "chanTlm" port = "TlmRecv" type = "Tlm" num = "0"/>
+    </connection>
+
+    <connection name = "CanTesterTlm">
+         <source component = "canTester" port = "Tlm" type = "Tlm" num = "0"/>
          <target component = "chanTlm" port = "TlmRecv" type = "Tlm" num = "0"/>
     </connection>
     
@@ -882,5 +924,16 @@
          <source component = "blockDrv" port = "BufferOut" type = "DataBuffer" num = "0"/>
          <target component = "recvBuffComp" port = "Data" type = "DataBuffer" num = "0"/>
     </connection>
-    
+
+      <!-- CAN0 connection -->
+    <connection name = "can0In">
+        <source component = "socketCan0Driver" port = "canRecv" type = "Fw::BufferSend" num = "0"/>
+        <target component = "canTester" port = "CanRecv" type = "Fw::BufferSend" num = "0"/>
+    </connection>
+
+    <connection name = "can0Out">
+        <source component = "canTester" port = "CanWrite" type = "Fw::BufferSend" num = "0"/>
+        <target component = "socketCan0Driver" port = "canSend" type = "Fw::BufferSend" num = "0"/>
+    </connection>
+
 </assembly>

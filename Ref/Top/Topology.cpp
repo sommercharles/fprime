@@ -98,6 +98,9 @@ Svc::AssertFatalAdapterComponentImpl fatalAdapter("fatalAdapter");
 
 Svc::FatalHandlerComponentImpl fatalHandler("fatalHandler");
 
+Drv::SocketCanDriverComponentImpl socketCan0Driver("socketCan0Driver");
+Ref::CanTesterComponentImpl canTester("canTester");
+
 bool constructApp(bool dump, U32 port_number, char* hostname) {
 
 #if FW_PORT_TRACING
@@ -154,6 +157,10 @@ bool constructApp(bool dump, U32 port_number, char* hostname) {
 	fatalHandler.init(0);
 	health.init(25,0);
 	pingRcvr.init(10);
+
+    canTester.init(10,0);
+    socketCan0Driver.init(0);
+
     // Connect rate groups to rate group driver
     constructRefArchitecture();
 
@@ -180,6 +187,8 @@ bool constructApp(bool dump, U32 port_number, char* hostname) {
 	SG5.regCommands();
 	health.regCommands();
 	pingRcvr.regCommands();
+
+    canTester.regCommands();
 
     // read parameters
     prmDb.readParamFile();
@@ -231,6 +240,11 @@ bool constructApp(bool dump, U32 port_number, char* hostname) {
     if (hostname != NULL && port_number != 0) {
         socketIpDriver.startSocketTask(100, 10 * 1024, hostname, port_number);
     }
+    
+    canTester.start(0, 100, 10*1024);
+
+    // Start CAN0 driver socket accepting only frame ID 0xXXXXX123
+    socketCan0Driver.startSocketTask(100, 10 * 1024, "can0", 0x00000FFF, 0x00000123);
     return false;
 }
 
